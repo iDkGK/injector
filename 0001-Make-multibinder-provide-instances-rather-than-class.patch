@@ -1,0 +1,26 @@
+From 4b7f408e16343422eda6297495fde5f4a294f248 Mon Sep 17 00:00:00 2001
+From: iDkGK <1444807655@qq.com>
+Date: Sun, 2 Apr 2023 15:26:51 +0800
+Subject: [PATCH] Make multibinder provide instances rather than classes.
+
+Signed-off-by: iDkGK <1444807655@qq.com>
+---
+ injector/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/injector/__init__.py b/injector/__init__.py
+index 8adf6be..c9b1304 100644
+--- a/injector/__init__.py
++++ b/injector/__init__.py
+@@ -355,7 +355,7 @@ class MultiBindProvider(ListOfProviders[List[T]]):
+     return sequences."""
+ 
+     def get(self, injector: 'Injector') -> List[T]:
+-        return [i for provider in self._providers for i in provider.get(injector)]
++        return [injector.get(i) for provider in self._providers for i in provider.get(injector)]
+ 
+ 
+ class MapBindProvider(ListOfProviders[Dict[str, T]]):
+-- 
+2.40.0.windows.1
+
