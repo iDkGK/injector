@@ -531,7 +531,7 @@ class Binder:
 
         In this context the module is one of the following:
 
-        * function taking the :class:`Binder` as it's only parameter
+        * function taking the :class:`Binder` as its only parameter
 
           ::
 
@@ -540,7 +540,7 @@ class Binder:
 
             binder.install(configure)
 
-        * instance of :class:`Module` (instance of it's subclass counts)
+        * instance of :class:`Module` (instance of its subclass counts)
 
           ::
 
@@ -705,6 +705,8 @@ def _punch_through_alias(type_: Any) -> type:
         and type(type_).__name__ == 'NewType'
     ):
         return type_.__supertype__
+    elif isinstance(type_, _AnnotatedAlias) and getattr(type_, '__metadata__', None) is not None:
+        return type_.__origin__
     else:
         return type_
 
@@ -1005,7 +1007,15 @@ class Injector:
     def call_with_injection(
         self, callable: Callable[..., T], self_: Any = None, args: Any = (), kwargs: Any = {}
     ) -> T:
-        """Call a callable and provide it's dependencies if needed.
+        """Call a callable and provide its dependencies if needed.
+
+        Dependencies are provided when the callable is decorated with :func:`@inject <inject>`
+        or some individual parameters are wrapped in :data:`Inject` – otherwise
+        ``call_with_injection()`` is equivalent to just calling the callable directly.
+
+        If there is an overlap between arguments provided in ``args`` and ``kwargs``
+        and injectable dependencies the provided values take precedence and no dependency
+        injection process will take place for the corresponding parameters.
 
         :param self_: Instance of a class callable belongs to if it's a method,
             None otherwise.
